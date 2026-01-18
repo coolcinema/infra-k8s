@@ -1,1 +1,2 @@
-image:\n  tag: latest
+image:
+  tag: sha-b523e334
