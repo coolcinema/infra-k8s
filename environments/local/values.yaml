@@ -1,0 +1,36 @@
+rabbitmq:
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/rabbitmq
+    tag: latest # Или конкретную версию типа 3.13-debian-12
+    pullPolicy: IfNotPresent
+
+  auth:
+    username: user
+    password: password
+    erlangCookie: secretcookie
+
+  persistence:
+    enabled: false
+
+  volumePermissions:
+    enabled: false
+
+redis:
+  architecture: standalone
+  auth:
+    enabled: false
+  master:
+    persistence:
+      enabled: false
+  replica:
+    replicaCount: 0
+
+postgresql:
+  auth:
+    username: postgres
+    password: postgres
+    database: coolcinema
+  primary:
+    persistence:
+      enabled: false

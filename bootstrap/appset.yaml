@@ -1,0 +1,49 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: coolcinema-microservices
+  namespace: argocd
+spec:
+  # 1. ГЕНЕРАТОР: Сканирует Git репозиторий Core на наличие JSON файлов
+  generators:
+    - git:
+        repoURL: https://github.com/coolcinema/core.git
+        revision: main
+        files:
+          - path: "packages/registry/definitions/*.json"
+
+  # 2. ШАБЛОН: Создает Application для каждого найденного файла
+  template:
+    metadata:
+      name: "{{slug}}" # Использует поле "slug" из JSON (например, sales-service)
+    spec:
+      project: default
+
+      # ИСТОЧНИК: Generic Chart в Infra репозитории
+      source:
+        repoURL: https://github.com/coolcinema/infra-k8s.git
+        targetRevision: main
+        path: charts/microservice
+
+        # ПАРАМЕТРЫ: Прокидываем данные из JSON в Helm Values
+        helm:
+          values: |
+            fullnameOverride: "{{slug}}"
+            image:
+              repository: ghcr.io/coolcinema/{{slug}}
+              tag: latest
+            service:
+              port: {{port}}
+
+      # НАЗНАЧЕНИЕ: Наш кластер
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: coolcinema
+
+      # ПОЛИТИКА: Авто-синхронизация
+      syncPolicy:
+        automated:
+          prune: true # Удалять сервис, если JSON удален
+          selfHeal: true # Чинить дрифт конфигурации
+        syncOptions:
+          - CreateNamespace=true

@@ -1,0 +1,27 @@
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  repository: ghcr.io/coolcinema/placeholder
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+# Секрет для доступа к GHCR (должен существовать в namespace сервиса)
+imagePullSecrets:
+  - name: ghcr-secret
+
+service:
+  type: ClusterIP
+  port: 3000
+
+ingress:
+  enabled: false
+
+resources:
+  limits:
+    memory: 256Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
+
+env: {}

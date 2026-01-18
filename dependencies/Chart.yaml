@@ -1,0 +1,13 @@
+apiVersion: v2
+name: infra-dependencies
+version: 1.0.0
+dependencies:
+  - name: postgresql
+    version: 18.2.0
+    repository: https://charts.bitnami.com/bitnami
+  - name: rabbitmq
+    version: 16.0.14 # Актуальная версия (RabbitMQ 4/3.13)
+    repository: https://charts.bitnami.com/bitnami
+  - name: redis
+    version: 24.1.0 # Актуальная версия (Redis 7.4)
+    repository: https://charts.bitnami.com/bitnami
