@@ -3,7 +3,7 @@ fullnameOverride: ""
 
 image:
   repository: ghcr.io/coolcinema/placeholder
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   tag: "latest"
 
 # Секрет для доступа к GHCR (должен существовать в namespace сервиса)
