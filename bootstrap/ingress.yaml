@@ -1,0 +1,44 @@
+# --- ArgoCD Ingress ---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd-server-ingress
+  namespace: argocd
+  annotations:
+    # ArgoCD работает по HTTPS внутри, нужно сказать Nginx'у об этом
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    # Для работы UI
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  rules:
+    - host: argo.coolcinema.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: argocd-server
+                port:
+                  number: 443
+
+---
+# --- Jaeger Ingress ---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jaeger-query-ingress
+  namespace: coolcinema
+spec:
+  rules:
+    - host: jaeger.coolcinema.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: cool-infra-jaeger-query
+                port:
+                  number: 16686

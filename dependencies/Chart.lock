@@ -8,5 +8,8 @@ dependencies:
 - name: redis
   repository: https://charts.bitnami.com/bitnami
   version: 24.1.0
-digest: sha256:bfbd870f9c2a6d06d77d54383e06456454de9c21b57cb06f2f0da0ef3a60ff49
-generated: "2026-01-15T21:24:22.424001097+02:00"
+- name: jaeger
+  repository: https://jaegertracing.github.io/helm-charts
+  version: 3.3.0
+digest: sha256:30609046146379771213a0c643096e9e6fcb6d786799bd4f38b51b3f6e8f732a
+generated: "2026-01-19T18:00:55.335923892+02:00"

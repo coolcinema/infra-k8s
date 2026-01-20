@@ -11,3 +11,6 @@ dependencies:
   - name: redis
     version: 24.1.0 # Актуальная версия (Redis 7.4)
     repository: https://charts.bitnami.com/bitnami
+  - name: jaeger
+    version: 3.3.0 # Проверьте актуальную версию (битнами или jaegertracing)
+    repository: https://jaegertracing.github.io/helm-charts
