@@ -9,12 +9,10 @@ spec:
         repoURL: https://github.com/coolcinema/core.git
         revision: main
         files:
-          # 1. Обновляем путь поиска
           - path: "packages/catalog/services/*/manifest.json"
 
   template:
     metadata:
-      # 2. Обновляем доступ к полю slug (теперь внутри metadata)
       name: "{{metadata.slug}}"
     spec:
       project: default
@@ -27,10 +25,10 @@ spec:
           values: |
             fullnameOverride: "{{metadata.slug}}"
             service:
-              # 3. Порт. В новой структуре он внутри interfaces.grpc...
-              # Если мы стандартизировали порт 5000, можно захардкодить.
-              # Или добавить поле port обратно в metadata при пуше.
-              port: 5000 
+              # Передаем весь массив портов как JSON строку
+              # Helm chart распарсит её (или использует как объект, если values парсятся)
+              # В ArgoCD это работает так:
+              ports: {{ metadata.ports | toJson }}
             ingress:
               enabled: true
               hosts:
@@ -41,7 +39,6 @@ spec:
             image:
               repository: ghcr.io/coolcinema/{{metadata.slug}}
 
-          # Файл values из infra-k8s (для тегов)
           valueFiles:
             - "/apps/{{metadata.slug}}/values.yaml"
 
