@@ -9,11 +9,13 @@ spec:
         repoURL: https://github.com/coolcinema/core.git
         revision: main
         files:
-          - path: "packages/registry/definitions/*.json"
+          # 1. Обновляем путь поиска
+          - path: "packages/catalog/services/*/manifest.json"
 
   template:
     metadata:
-      name: "{{slug}}"
+      # 2. Обновляем доступ к полю slug (теперь внутри metadata)
+      name: "{{metadata.slug}}"
     spec:
       project: default
       source:
@@ -21,27 +23,27 @@ spec:
         targetRevision: main
         path: charts/microservice
 
-        # Helm Values: Объединяем параметры
         helm:
-          # 1. Сначала базовые параметры из Registry
           values: |
-            fullnameOverride: "{{slug}}"
+            fullnameOverride: "{{metadata.slug}}"
             service:
-              port: {{port}}
+              # 3. Порт. В новой структуре он внутри interfaces.grpc...
+              # Если мы стандартизировали порт 5000, можно захардкодить.
+              # Или добавить поле port обратно в metadata при пуше.
+              port: 5000 
             ingress:
               enabled: true
               hosts:
-                - host: {{slug}}.coolcinema.local
+                - host: {{metadata.slug}}.coolcinema.local
                   paths: 
                     - path: "/"
                       pathType: ImplementationSpecific
-            # Дефолтный репозиторий (тег будет переопределен ниже)
             image:
-              repository: ghcr.io/coolcinema/{{slug}}
+              repository: ghcr.io/coolcinema/{{metadata.slug}}
 
-          # 2. Затем накладываем файл с версией из infra-k8s/apps/...
+          # Файл values из infra-k8s (для тегов)
           valueFiles:
-            - "/apps/{{slug}}/values.yaml"
+            - "/apps/{{metadata.slug}}/values.yaml"
 
       destination:
         server: https://kubernetes.default.svc
@@ -53,53 +55,3 @@ spec:
           selfHeal: true
         syncOptions:
           - CreateNamespace=true
-
-# apiVersion: argoproj.io/v1alpha1
-# kind: ApplicationSet
-# metadata:
-#   name: coolcinema-microservices
-#   namespace: argocd
-# spec:
-#   # 1. ГЕНЕРАТОР: Сканирует Git репозиторий Core на наличие JSON файлов
-#   generators:
-#     - git:
-#         repoURL: https://github.com/coolcinema/core.git
-#         revision: main
-#         files:
-#           - path: "packages/registry/definitions/*.json"
-#
-#   # 2. ШАБЛОН: Создает Application для каждого найденного файла
-#   template:
-#     metadata:
-#       name: "{{slug}}" # Использует поле "slug" из JSON (например, sales-service)
-#     spec:
-#       project: default
-#
-#       # ИСТОЧНИК: Generic Chart в Infra репозитории
-#       source:
-#         repoURL: https://github.com/coolcinema/infra-k8s.git
-#         targetRevision: main
-#         path: charts/microservice
-#
-#         # ПАРАМЕТРЫ: Прокидываем данные из JSON в Helm Values
-#         helm:
-#           values: |
-#             fullnameOverride: "{{slug}}"
-#             image:
-#               repository: ghcr.io/coolcinema/{{slug}}
-#               tag: latest
-#             service:
-#               port: {{port}}
-#
-#       # НАЗНАЧЕНИЕ: Наш кластер
-#       destination:
-#         server: https://kubernetes.default.svc
-#         namespace: coolcinema
-#
-#       # ПОЛИТИКА: Авто-синхронизация
-#       syncPolicy:
-#         automated:
-#           prune: true # Удалять сервис, если JSON удален
-#           selfHeal: true # Чинить дрифт конфигурации
-#         syncOptions:
-#           - CreateNamespace=true
