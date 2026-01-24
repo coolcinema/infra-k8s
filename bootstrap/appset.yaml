@@ -9,10 +9,12 @@ spec:
         repoURL: https://github.com/coolcinema/core.git
         revision: main
         files:
-          - path: "packages/catalog/services/*/manifest.json"
+          # ArgoCD ищет файлы в папке apps пакета contracts
+          - path: "packages/contracts/apps/*.json"
 
   template:
     metadata:
+      # Имя приложения берем из slug
       name: "{{metadata.slug}}"
     spec:
       project: default
@@ -25,9 +27,7 @@ spec:
           values: |
             fullnameOverride: "{{metadata.slug}}"
             service:
-              # Передаем весь массив портов как JSON строку
-              # Helm chart распарсит её (или использует как объект, если values парсятся)
-              # В ArgoCD это работает так:
+              # Передаем список портов
               ports: {{ metadata.ports | toJson }}
             ingress:
               enabled: true
@@ -39,6 +39,7 @@ spec:
             image:
               repository: ghcr.io/coolcinema/{{metadata.slug}}
 
+          # Подключаем специфичные values из репо инфраструктуры (если есть)
           valueFiles:
             - "/apps/{{metadata.slug}}/values.yaml"
 
