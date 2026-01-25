@@ -27,19 +27,16 @@ spec:
           values: |
             fullnameOverride: "{{metadata.slug}}"
             service:
-              # Передаем список портов
+              # Передаем список портов (для Service)
               ports: {{ metadata.ports | toJson }}
-            ingress:
-              enabled: true
-              hosts:
-                - host: {{metadata.slug}}.coolcinema.local
-                  paths: 
-                    - path: "/"
-                      pathType: ImplementationSpecific
+
+            # Передаем весь массив ingress как есть (для Ingress)
+            ingress: {{ metadata.ingress | toJson }}
+
             image:
               repository: ghcr.io/coolcinema/{{metadata.slug}}
 
-          # Подключаем специфичные values из репо инфраструктуры (если есть)
+          # Подключаем специфичные values из репо инфраструктуры (если есть, например для тега image)
           valueFiles:
             - "/apps/{{metadata.slug}}/values.yaml"
 

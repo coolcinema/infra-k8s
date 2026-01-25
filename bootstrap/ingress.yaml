@@ -42,23 +42,3 @@ spec:
                 name: cool-infra-jaeger-query
                 port:
                   number: 16686
-
----
-# --- Cheatsheet Ingress ---
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: cheatsheet-ingress
-  namespace: coolcinema
-spec:
-  rules:
-    - host: cheatsheet.coolcinema.local
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: cheatsheet-service
-                port:
-                  number: 5000

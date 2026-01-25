@@ -1,3 +1,4 @@
+#  charts/microservice/values.yaml
 nameOverride: ""
 fullnameOverride: ""
 
@@ -14,8 +15,7 @@ service:
   type: ClusterIP
   port: 3000
 
-ingress:
-  enabled: false
+ingress: []
 
 resources:
   limits:
