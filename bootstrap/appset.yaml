@@ -17,7 +17,8 @@ spec:
   template:
     metadata:
       # Имя приложения = имя файла без расширения
-      name: "{{path.filenameNormalized}}"
+      # При goTemplate: true нужна точка перед path!
+      name: "{{.path.filenameNormalized}}"
     spec:
       project: default
       source:

@@ -3,8 +3,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ include "microservice.fullname" . }}
-  labels:
-    {{- include "microservice.labels" . | nindent 4 }}
+  # labels убрали, так как хелпер может отсутствовать
 spec:
   rules:
     {{- range .Values.ingress }}
