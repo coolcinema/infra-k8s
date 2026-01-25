@@ -4,30 +4,37 @@ metadata:
   name: coolcinema-microservices
   namespace: argocd
 spec:
+  # Включаем Go Templates для поддержки функций (toJson)
+  goTemplate: true
+
   generators:
     - git:
         repoURL: https://github.com/coolcinema/core.git
         revision: main
         files:
-          - path: "packages/contracts/apps/*.yaml"
+          - path: "packages/contracts/apps/*.json"
 
   template:
     metadata:
-      name: "{{path.basename}}"
+      # Имя приложения = имя файла без расширения
+      name: "{{path.filenameNormalized}}"
     spec:
       project: default
+      source:
+        repoURL: https://github.com/coolcinema/infra-k8s.git
+        targetRevision: main
+        path: charts/microservice
 
-      sources:
-        - repoURL: https://github.com/coolcinema/infra-k8s.git
-          targetRevision: main
-          path: charts/microservice
-          helm:
-            valueFiles:
-              - "$values/{{path.path}}"
-
-        - repoURL: https://github.com/coolcinema/core.git
-          targetRevision: main
-          ref: values
+        helm:
+          # Передаем распаршенные данные в Helm Values.
+          values: |
+            fullnameOverride: "{{.fullnameOverride}}"
+            image:
+              repository: "{{.image.repository}}"
+            service:
+              ports: {{.service.ports | toJson}}
+            ingress: {{.ingress | toJson}}
+            env: {{.env | toJson}}
 
       destination:
         server: https://kubernetes.default.svc
