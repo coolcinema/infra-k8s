@@ -25,20 +25,20 @@ spec:
 
         helm:
           values: |
-            fullnameOverride: "{{metadata.slug}}"
+            fullnameOverride: "{{.metadata.slug}}"
             service:
               # Передаем список портов (для Service)
-              ports: {{ metadata.ports | toJson }}
+              ports: {{ .metadata.ports | toJson }}
 
             # Передаем весь массив ingress как есть (для Ingress)
-            ingress: {{ metadata.ingress | toJson }}
+            ingress: {{ .metadata.ingress | toJson }}
 
             image:
-              repository: ghcr.io/coolcinema/{{metadata.slug}}
+              repository: ghcr.io/coolcinema/{{.metadata.slug}}
 
           # Подключаем специфичные values из репо инфраструктуры (если есть, например для тега image)
           valueFiles:
-            - "/apps/{{metadata.slug}}/values.yaml"
+            - "/apps/{{.metadata.slug}}/values.yaml"
 
       destination:
         server: https://kubernetes.default.svc
