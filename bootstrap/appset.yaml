@@ -1,4 +1,3 @@
-#  bootstrap/appset.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
@@ -10,51 +9,25 @@ spec:
         repoURL: https://github.com/coolcinema/core.git
         revision: main
         files:
-          # Теперь ищем YAML файлы (готовые values)
           - path: "packages/contracts/apps/*.yaml"
 
   template:
     metadata:
-      # Генератор Git возвращает 'path' к файлу. Извлекаем имя файла (slug) через basename.
-      # Но ArgoCD Git Generator возвращает path.path
-      # Имя файла можно получить через {{ path.basename }}
-      name: "{{path.basenameNormalized}}" # basename без расширения
+      name: "{{path.basename}}"
     spec:
       project: default
-      source:
-        repoURL: https://github.com/coolcinema/infra-k8s.git
-        targetRevision: main
-        path: charts/microservice
 
-        helm:
-          # Больше никаких values: | ...!
-          # Просто указываем файл из репозитория core как values file.
-          valueFiles:
-            # Ссылка на файл, найденный генератором.
-            # В ArgoCD AppSet Git generator переменная {{path}} указывает на путь к файлу? Нет.
-            # Git files generator:
-            # {{ .path.path }} - полный путь
-            # Но valueFiles в source helm относятся к repoURL (infra-k8s).
-            # А наши values лежат в ДРУГОМ репо (core).
+      sources:
+        - repoURL: https://github.com/coolcinema/infra-k8s.git
+          targetRevision: main
+          path: charts/microservice
+          helm:
+            valueFiles:
+              - "$values/{{path.path}}"
 
-            # ArgoCD НЕ УМЕЕТ брать values из другого репо напрямую в source.helm.valueFiles,
-            # ЕСЛИ это не Multi-Source Application (бета в 2.6+).
-
-            # --- ВАРИАНТ: Передача контента через values ---
-            # Так как мы генерируем YAML, мы можем прочитать его контент.
-            # Но если мы снова упремся в шаблонизацию...
-
-            # --- РЕШЕНИЕ: Multi-Source Application (Sources) ---
-            # Но AppSet template поддерживает sources (список)? Да, в свежих версиях.
-
-            # --- РЕШЕНИЕ (Простое): ValuesObject ---
-            # Мы можем передать содержимое файла как valuesObject? Нет.
-
-            # --- ВОЗВРАТ К ИСТОКАМ: values: | {{ .content }} ---
-            # Генератор 'git' с 'files' читает контент файла.
-            # Если файл - это валидный YAML, мы можем просто вставить его!
-
-          values: "{{ .content }}"
+        - repoURL: https://github.com/coolcinema/core.git
+          targetRevision: main
+          ref: values
 
       destination:
         server: https://kubernetes.default.svc
