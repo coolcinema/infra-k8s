@@ -16,7 +16,7 @@ spec:
 
   template:
     metadata:
-      name: "{{path.filenameNormalized}}"
+      name: "{{.path.filenameNormalized}}"
     spec:
       project: default
       source:
