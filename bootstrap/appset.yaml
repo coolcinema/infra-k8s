@@ -38,7 +38,7 @@ spec:
           # 2. Переопределения из Infra (CI обновляет теги здесь)
           # Файл лежит в репо infra-k8s (рядом с чартом, в папке apps/)
           valueFiles:
-            - "apps/{{path.filenameNormalized}}/values.yaml"
+            - "apps/{{.path.filenameNormalized}}/values.yaml"
 
       destination:
         server: https://kubernetes.default.svc
