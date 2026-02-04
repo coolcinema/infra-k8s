@@ -6,10 +6,9 @@ rabbitmq:
     pullPolicy: IfNotPresent
 
   auth:
-    username: user
-    password: password
+    username: coolcinema
+    password: coolpassword
     erlangCookie: secretcookie
-
   persistence:
     enabled: false
 
