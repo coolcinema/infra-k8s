@@ -1,10 +1,10 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: cool-infra
+  name: infrastructure # Чистое имя приложения!
   namespace: argocd
   labels:
-    app.kubernetes.io/name: infra-dependencies
+    app.kubernetes.io/name: infrastructure
     app.kubernetes.io/part-of: coolcinema-platform
 spec:
   project: default
@@ -13,6 +13,7 @@ spec:
     targetRevision: main
     path: dependencies
     helm:
+      # Используем существующий файл конфигурации
       valueFiles:
         - ../environments/local/values.yaml
   destination:
