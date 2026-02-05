@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cool-infra
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: infra-dependencies
+    app.kubernetes.io/part-of: coolcinema-platform
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/coolcinema/infra-k8s.git
+    targetRevision: main
+    path: dependencies
+    helm:
+      valueFiles:
+        - ../environments/local/values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: coolcinema
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
