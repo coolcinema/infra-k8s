@@ -1,4 +1,5 @@
 rabbitmq:
+  fullnameOverride: "rabbitmq"
   image:
     registry: docker.io
     repository: bitnamilegacy/rabbitmq
@@ -16,7 +17,10 @@ rabbitmq:
     enabled: false
 
 redis:
+  fullnameOverride: "redis"
+
   architecture: standalone
+
   auth:
     enabled: false
   master:
@@ -26,6 +30,8 @@ redis:
     replicaCount: 0
 
 postgresql:
+  fullnameOverride: "postgresql"
+
   auth:
     username: postgres
     password: postgres
@@ -35,6 +41,7 @@ postgresql:
       enabled: false
 
 jaeger:
+  fullnameOverride: "jaeger"
   provisionDataStore:
     cassandra: false
   allInOne:
